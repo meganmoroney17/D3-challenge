@@ -32,11 +32,11 @@ var chartGroup = svg.append("g")
 // .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
 // Read from data.csv
-d3.csv("data.csv", function(err, data) {
+d3.csv("assets/data/data.csv", function(data) {
     //d3.csv("/data/data.csv", function(err, data) {
-    if (err) throw err;
+    // if (err) throw err;
     //if (error) return console.warn(error);
-    console.log(data)
+    console.log(data);
     
     //loop through the csv file & .
     for (var i = 0; i < data.length; i++) {
@@ -44,7 +44,7 @@ d3.csv("data.csv", function(err, data) {
         console.log(i, data[i].obesity, data[i].income  );
     }
 
-    data.forEach(function(data) {
+    Array.from(data).forEach(function(data) {
         data.poverty = +data.poverty;
         data.healthcare = +data.healthcare;
       })
@@ -66,7 +66,7 @@ d3.csv("data.csv", function(err, data) {
       ]);
 
       yLinearScale.domain([0,
-          d3.max(brfssdata, function(data) {
+          d3.max(data, function(data) {
           return +data.healthcare * 1.1;
         }),
       ]);
@@ -88,19 +88,17 @@ d3.csv("data.csv", function(err, data) {
         });
   
       chartGroup.call(toolTip);
+
+    //   console.log(data);
       
       // Generate Scatter Plot
       chartGroup
-      .selectAll('circle')
-      .data(brfssdata)
+      .selectAll("circle")
+      .data(data)
       .enter()
-      .append('circle')
-      .attr('cx', function(data, index) {
-        return xLinearScale(data.poverty);
-      })
-      .attr('cy', function(data, index) {
-        return yLinearScale(data.healthcare);
-      })
+      .append("circle")
+      .attr("cx", d => xLinearScale(d.poverty))
+      .attr("cy", d => yLinearScale(d.healthcare))
       .attr('r', '16')
       .attr('fill', 'lightgreen')
       .attr('fill-opacity',0.6)
@@ -122,7 +120,7 @@ d3.csv("data.csv", function(err, data) {
       chartGroup.append('g').call(leftAxis);
   
       svg.selectAll(".dot")
-      .data(brfssdata)
+      .data(data)
       .enter()
       .append("text")
       .text(function(data) { return data.abbr; })
